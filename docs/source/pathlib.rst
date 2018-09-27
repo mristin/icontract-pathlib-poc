@@ -1,6 +1,0 @@
-pathlib
-=======
-
-.. automodule:: pathlib
-    :members:
-

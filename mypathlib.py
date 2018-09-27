@@ -1,50 +1,18 @@
 # Commit: https://github.com/python/cpython/commit/0185f34ddcf07b78feb6ac666fbfd4615d26b028#diff-ab57fbd24b8af25b7267289a32704048
 
 import fnmatch
-import functools
 import io
-import ntpath
 import os
-import posixpath
-import re
-import sys
-from _collections_abc import Sequence
-from errno import EINVAL, ENOENT, ENOTDIR, EBADF
-from operator import attrgetter
+from pathlib import _PathParents
 from stat import S_ISDIR, S_ISLNK, S_ISREG, S_ISSOCK, S_ISBLK, S_ISCHR, S_ISFIFO
-from urllib.parse import quote_from_bytes as urlquote_from_bytes
 
-import icontract
+from icontract import pre, post
 
 supports_symlinks = True
-if os.name == 'nt':
-    import nt
-    if sys.getwindowsversion()[:2] >= (6, 0):
-        from nt import _getfinalpathname
-    else:
-        supports_symlinks = False
-        _getfinalpathname = None
-else:
-    nt = None
 
 
-__all__ = [
-    "PurePath", "PurePosixPath", "PureWindowsPath",
-    "Path", "PosixPath", "WindowsPath",
-    ]
-
-#
-# Internals
-#
-
-# EBADF - guard agains macOS `stat` throwing EBADF
-_IGNORED_ERROS = (ENOENT, ENOTDIR, EBADF)
-
-def _is_wildcard_pattern(pat):
-    # Whether this pattern needs actual matching using fnmatch, or can
-    # be looked up directly as a file.
-    return "*" in pat or "?" in pat or "[" in pat
-
+class PurePosixPath:
+    pass
 
 
 class PurePath(object):
@@ -57,13 +25,43 @@ class PurePath(object):
     directly, regardless of your system.
     """
 
+    @pre(lambda args, result: not (not args) or not result.parts)
+    @pre(lambda args, result: not (not args) or str(result) == '.',
+         "When pathsegments is empty, the current directory is assumed")
+    @pre(lambda args, result: not any(Path(arg).is_absolute() for arg in args) or
+                              (result == [pth for arg in args for pth in [Path(arg)] if pth.is_absolute()][-1]),
+         "When several absolute paths are given, the last is taken as an anchor (mimicking os.path.join()’s behaviour)")
+    @post(lambda result: '//' not in str(result), "Spurious slashes are collapsed")
+    @post(lambda result: '/./' not in str(result), "Spurious dots are collapsed")
+    @post(lambda args, result: not any('..' in arg for arg in args) or '..' in str(result),
+          "Double dots are not collapsed, since this would change the meaning of a path in the face of symbolic links")
+    def __new__(cls, *args):
+        """Construct a PurePath from one or several strings and or existing
+        PurePath objects.  The strings and path objects are combined so as
+        to yield a canonicalized path, which is incorporated into the
+        new PurePath object.
+        """
+        if cls is PurePath:
+            cls = PureWindowsPath if os.name == 'nt' else PurePosixPath
 
+        return cls._from_parts(args)
+
+    @pre(lambda self: all(len(part) < 256 for part in self.parts), "Contains no path components longer than 255 bytes")
+    @post(lambda result: '\x00' not in result, "Contains no null-byte")
+    @post(lambda self, result: not (not self.parts) or result == '.', "Empty path is '.'")
     def as_posix(self):
         """Return the string representation of the path with forward (/)
-        slashes."""
+        slashes.
+
+        :return: something
+        """
         f = self._flavour
         return str(self).replace(f.sep, '/')
 
+    @pre(lambda self: self.is_absolute(), "relative path can't be expressed as a file URI.")
+    @post(lambda self, result: result == "file://" + self.as_posix())
+    @post(lambda result: False,
+          "??? Can it have an URL fragment? Can it have queries? Is it URL-encoded or needs to be URL-encoded by the caller?")
     def as_uri(self):
         """Return the path as a 'file' URI."""
         if not self.is_absolute():
@@ -71,22 +69,31 @@ class PurePath(object):
         return self._flavour.make_uri(self)
 
     @property
+    @post(lambda self, result: not (not self.is_absolute()) or result == "", "Drive of relative paths is empty.")
+    @post(lambda self, result: not (isinstance(self, PosixPath)) or result == "", "Linux paths have no drives.")
     def drive(self):
         """The drive prefix (letter or UNC path), if any."""
-        ...
+        return self._drv
 
     @property
+    @post(lambda self, result: not (not self.is_absolute()) or result == "", "Root of relative paths is empty.")
     def root(self):
         """The root of the path, if any."""
-        ...
+        return self._root
 
     @property
+    @post(lambda self, result: not self.is_absolute() or result == self.drive + self.root,
+          "The concatenation of the drive and root.")
+    @post(lambda self, result: not (not self.is_absolute()) or result == '', "No anchor in relative paths.")
     def anchor(self):
         """The concatenation of the drive and root, or ''."""
         anchor = self._drv + self._root
         return anchor
 
     @property
+    @post(lambda result: os.path.sep not in result)
+    @post(lambda self, result: not (self == Path(self.anchor)) or result == "")
+    @post(lambda self, result: not (self != Path(self.anchor)) or result == self.parts[-1])
     def name(self):
         """The final path component, if any."""
         parts = self._parts
@@ -95,6 +102,12 @@ class PurePath(object):
         return parts[-1]
 
     @property
+    @post(lambda result: result == "" or result.startswith("."))
+    @post(lambda self, result: self.name() or result == "")
+    @post(lambda self, result: self.name().endswith(result))
+    @post(lambda self, result: self.name() == self.stem() + result)
+    @post(lambda self, result: not self.name().endswith(".") or result == "")
+    @post(lambda self, result: not ("." in self.name()[:-1]) or result != "")
     def suffix(self):
         """The final component's last suffix, if any."""
         name = self.name
@@ -105,6 +118,12 @@ class PurePath(object):
             return ''
 
     @property
+    @post(lambda result: all(item.startswith(".") for item in result))
+    @post(lambda result: all(not item.endswith(".") for item in result))
+    @post(lambda self, result: self.name() or result == [])
+    @post(lambda self, result: self.name().endswith(".") or self.suffix() == "".join(result))
+    @post(lambda self, result: not self.name().endswith(".") or result == [])
+    @post(lambda self, result: result == [] or self.name() == self.stem + result[-1])
     def suffixes(self):
         """A list of the final component's suffixes, if any."""
         name = self.name
@@ -114,6 +133,8 @@ class PurePath(object):
         return ['.' + suffix for suffix in name.split('.')[1:]]
 
     @property
+    @post(lambda self, result: self.name() == result + self.suffix())
+    @post(lambda self, result: not (self.name().endswith(".")) or result == self.name())
     def stem(self):
         """The final path component, minus its last suffix."""
         name = self.name
@@ -123,17 +144,30 @@ class PurePath(object):
         else:
             return name
 
+    @pre(lambda self: self.name, "The original path must have a name.")
+    @post(lambda self, name, result: result.name() == name)
+    @post(lambda self, result: result.parent == self.parent)
     def with_name(self, name):
         """Return a new path with the file name changed."""
         if not self.name:
             raise ValueError("%r has an empty name" % (self,))
         drv, root, parts = self._flavour.parse_parts((name,))
         if (not name or name[-1] in [self._flavour.sep, self._flavour.altsep]
-            or drv or root or len(parts) != 1):
+                or drv or root or len(parts) != 1):
             raise ValueError("Invalid name %r" % (name))
         return self._from_parsed_parts(self._drv, self._root,
                                        self._parts[:-1] + [name])
 
+    @pre(lambda suffix: not os.path.sep in suffix)
+    @pre(lambda suffix: not os.path.altsep in suffix)
+    @pre(lambda suffix: suffix.startswith("."))
+    @pre(lambda suffix: suffix and suffix != '.')
+    @pre(lambda self: self.name(), "The original path must have a name.")
+    @post(lambda self, result: result.parent == self.parent)
+    @post(lambda self, suffix, result: not (not self.suffix) or (result.name == self.name + suffix),
+          "If the original path doesn’t have a suffix, the new suffix is appended instead.")
+    @post(lambda self, suffix, result: not (not suffix) or (not result.suffix),
+          "If the suffix is an empty string, the original suffix is removed.")
     def with_suffix(self, suffix):
         """Return a new path with the file suffix changed.  If the path
         has no suffix, add given suffix.  If the given suffix is an empty
@@ -188,6 +222,10 @@ class PurePath(object):
                                        abs_parts[n:])
 
     @property
+    @post(lambda self, result: not self.is_absolute() or len(result) >= 1)
+    @post(lambda self, result: not self.is_absolute() or result[0] == self.anchor,
+          "The anchor is regrouped in a single part")
+    @post(lambda self, result: not isinstance(self, PurePosixPath) or os.path.sep.join(result) == str(self))
     def parts(self):
         """An object providing sequence-like access to the
         components in the filesystem path."""
@@ -199,21 +237,31 @@ class PurePath(object):
             self._pparts = tuple(self._parts)
             return self._pparts
 
+    @post(lambda self: False, "??? I am not familiar with this function enough.")
     def joinpath(self, *args):
-        """Combine this path with one or several arguments, and return a
+        """XXXCombine this path with one or several arguments, and return a
         new path representing either a subpath (if all arguments are relative
         paths) or a totally different path (if one of the arguments is
         anchored).
         """
         return self._make_child(args)
 
+    @post(lambda self, key, result: not (not Path(key).is_absolute()) or self in result.parents)
+    @post(lambda self, key, result: not (not Path(key).is_absolute()) or result.relative_to(self) == Path(key))
+    @post(lambda key, result: not Path(key).is_absolute() or result == Path(key))
     def __truediv__(self, key):
+        """MR: dummy truediv doc so that it displays in sphinx."""
         return self._make_child((key,))
 
     def __rtruediv__(self, key):
         return self._from_parts([key] + self._parts)
 
     @property
+    @post(lambda self, result: not (not self.parts) or result == self, "You can not go past an empty path")
+    @post(lambda self, result: not (len(self.parts) == 1 and self.is_absolute()) or result == self,
+          "You can not go past an anchor")
+    @post(lambda self, result: not (len(self.parts) > 1) or result.name == self.parts[-2],
+          "This is purely lexical operation.")
     def parent(self):
         """The logical parent of the path."""
         drv = self._drv
@@ -224,10 +272,14 @@ class PurePath(object):
         return self._from_parsed_parts(drv, root, parts[:-1])
 
     @property
+    @post(lambda self, result: not (self.parent == self) or not result)
+    @post(lambda self, result: not (self.parent != self) or self.parent == result[-1])
+    @post(lambda self, result: not (self.parent != self) or all(p1.parent == p2 for p1, p2 in pairwise(result)))
     def parents(self):
         """A sequence of this path's logical parents."""
         return _PathParents(self)
 
+    @post(lambda self, result: not result or self.root != "", "Absolute paths have non-empty root")
     def is_absolute(self):
         """True if the path is absolute (has both a root and, if applicable,
         a drive)."""
@@ -235,11 +287,17 @@ class PurePath(object):
             return False
         return not self._flavour.has_drv or bool(self._drv)
 
+    @post(lambda self, result: not isinstance(self, PurePosixPath) or not result,
+          "With PurePosixPath, False is always returned.")
     def is_reserved(self):
         """Return True if the path contains one of the special names reserved
         by the system, if any."""
         return self._flavour.is_reserved(self._parts)
 
+    @pre(lambda self, path_pattern: not (not self.is_absolute()) or True,
+         "If pattern is relative, the path can be either relative or absolute.")
+    @pre(lambda self, path_pattern: not self.is_absolute() or Path(path_pattern).is_absolute(),
+         "If pattern is absolute, the path must be absolute.")
     def match(self, path_pattern):
         """
         Return True if this path matches the given pattern.
@@ -265,6 +323,25 @@ class PurePath(object):
                 return False
         return True
 
+
+class PurePosixPath(PurePath):
+    """PurePath subclass for non-Windows systems.
+
+    On a POSIX system, instantiating a PurePath should return this object.
+    However, you can also instantiate it directly on any system.
+    """
+    pass
+
+
+class PureWindowsPath(PurePath):
+    """PurePath subclass for Windows systems.
+
+    On a Windows system, instantiating a PurePath should return this object.
+    However, you can also instantiate it directly on any system.
+    """
+    pass
+
+
 class Path(PurePath):
     """PurePath subclass that can make system calls.
 
@@ -274,9 +351,11 @@ class Path(PurePath):
     object. You can also instantiate a PosixPath or WindowsPath directly,
     but cannot instantiate a WindowsPath on a POSIX system or vice versa.
     """
+
     # Public API
 
     @classmethod
+    @post(lambda result: result == os.getcwd())
     def cwd(cls):
         """Return a new path pointing to the current working directory
         (as returned by os.getcwd()).
@@ -284,12 +363,17 @@ class Path(PurePath):
         return cls(os.getcwd())
 
     @classmethod
+    @post(lambda result: result == os.path.expanduser('~'))
     def home(cls):
         """Return a new path pointing to the user's home directory (as
         returned by os.path.expanduser('~')).
         """
         return cls(cls()._flavour.gethomedir(None))
 
+    @pre(lambda other_path: isinstance(other_path, (str, Path)), "other_path can be either a Path object, or a string")
+    @post(lambda self, other_path, result: result == os.path.samefile(str(self), str(other_path)),
+          "The semantics are similar to os.path.samefile() and os.path.samestat() ??? "
+          "I don't understand what is meant here with semantics similar to os.path.samestat().")
     def samefile(self, other_path):
         """Return whether other_path is the same or not as this file
         (as returned by os.path.samefile()).
@@ -315,6 +399,8 @@ class Path(PurePath):
             if self._closed:
                 self._raise_closed()
 
+    @pre(lambda pattern: pattern, "Unacceptable pattern")
+    @pre(lambda pattern: not Path(pattern).is_absolute(), "Non-relative patterns are unsupported")
     def glob(self, pattern):
         """Iterate over this subtree and yield all existing files (of any
         kind, including directories) matching the given pattern.
@@ -329,6 +415,8 @@ class Path(PurePath):
         for p in selector.select_from(self):
             yield p
 
+    @pre(lambda pattern: pattern, "Unacceptable pattern")
+    @pre(lambda pattern: not Path(pattern).is_absolute(), "Non-relative patterns are unsupported")
     def rglob(self, pattern):
         """Recursively yield all existing files (of any kind, including
         directories) matching the given pattern, anywhere in this subtree.
@@ -341,6 +429,10 @@ class Path(PurePath):
         for p in selector.select_from(self):
             yield p
 
+    @post(lambda self, result: not self.is_absolute() or self == result)
+    @post(lambda self, result: not ('.' in self.parts) or '.' in result.parts)
+    @post(lambda self, result: not ('..' in self.parts) or '..' in result.parts)
+    @post(lambda result: result.is_absolute())
     def absolute(self):
         """Return an absolute version of this path.  This function works
         even if the path doesn't point to anything.
@@ -359,6 +451,12 @@ class Path(PurePath):
         obj._init(template=self)
         return obj
 
+    @pre(lambda self, strict: not strict or self.exists())
+    @pre(lambda self, strict: not (not strict) or True,
+         "The path is resolved as far as possible and any remainder is appended without checking whether it exists. "
+         "If an infinite loop is encountered along the resolution path, RuntimeError is raised.")
+    @post(lambda result: result.is_absolute())
+    @post(lambda result: '..' not in result.parts, "``..`` components are eliminated.")
     def resolve(self, strict=False):
         """
         Make the path absolute, resolving all symlinks on the way and also
@@ -379,6 +477,10 @@ class Path(PurePath):
         obj._init(template=self)
         return obj
 
+    @post(lambda self, result: not (result is not None) or
+                               os.stat(str(self)).__dict__ == result.__dict__,
+          "??? This is probably not what it was meant with 'like os.stat() does'?")
+    @post(lambda self, result: not (result is not None) or self.exists())
     def stat(self):
         """
         Return the result of the stat() system call on this path, like
@@ -434,6 +536,7 @@ class Path(PurePath):
         with self.open(mode='wb') as f:
             return f.write(view)
 
+    @pre(lambda data: isinstance(data, str), 'data must be str')
     def write_text(self, data, encoding=None, errors=None):
         """
         Open the file in text mode, write to it, and close the file.
@@ -444,6 +547,8 @@ class Path(PurePath):
         with self.open(mode='w', encoding=encoding, errors=errors) as f:
             return f.write(data)
 
+    @pre(lambda self, exist_ok: not self.exists or exist_ok,
+         "If the file already exists, the function succeeds if exist_ok is true.")
     def touch(self, mode=0o666, exist_ok=True):
         """
         Create this file with the given access mode, if it doesn't exist.
@@ -467,6 +572,8 @@ class Path(PurePath):
         fd = self._raw_open(flags, mode)
         os.close(fd)
 
+    @pre(lambda self, exist_ok: not (self.exists()) or exist_ok)
+    @pre(lambda self, parents: not (not self.parent.exists()) or parents)
     def mkdir(self, mode=0o777, parents=False, exist_ok=False):
         """
         Create a new directory at this given path.
@@ -486,6 +593,7 @@ class Path(PurePath):
             if not exist_ok or not self.is_dir():
                 raise
 
+    @post(lambda: True, "??? It would make sense to use old(self.stat()) and compare it against the new mode.")
     def chmod(self, mode):
         """
         Change the permissions of the path, like os.chmod().
@@ -494,6 +602,8 @@ class Path(PurePath):
             self._raise_closed()
         self._accessor.chmod(self, mode)
 
+    @post(lambda: True, "??? It would make sense to use old(self.stat()) and compare it against the new mode. "
+                        "This would need a case distinction for symlink yes/no.")
     def lchmod(self, mode):
         """
         Like chmod(), except if the path points to a symlink, the symlink's
@@ -503,6 +613,7 @@ class Path(PurePath):
             self._raise_closed()
         self._accessor.lchmod(self, mode)
 
+    @pre(lambda self: self.is_file(), "The path points to a directory, use Path.rmdir() instead.")
     def unlink(self):
         """
         Remove this file or link.
@@ -512,6 +623,8 @@ class Path(PurePath):
             self._raise_closed()
         self._accessor.unlink(self)
 
+    @pre(lambda self: self.is_dir())
+    @pre(lambda self: not list(self.iterdir()), "??? There must be a way to check this more optimally")
     def rmdir(self):
         """
         Remove this directory.  The directory must be empty.
@@ -520,6 +633,10 @@ class Path(PurePath):
             self._raise_closed()
         self._accessor.rmdir(self)
 
+    @post(lambda self, result: not (result and self.is_symlink()) or result.__dict__ == self.resolve().stat(),
+          "If the path points to a symbolic link, return the symbolic link’s information rather than its target’s.")
+    @post(lambda self, result: not (result and not self.is_symlink()) or result.__dict__ == self.stat(),
+          "Same as Path.stat()")
     def lstat(self):
         """
         Like stat(), except if the path points to a symlink, the symlink's
@@ -546,6 +663,9 @@ class Path(PurePath):
             self._raise_closed()
         self._accessor.replace(self, target)
 
+    @pre(lambda self, target, target_is_directory:
+         not (isinstance(self, PureWindowsPath) and target.is_dir()) or target_is_directory == True,
+         "Under Windows, target_is_directory must be true (default False) if the link’s target is a directory.")
     def symlink_to(self, target, target_is_directory=False):
         """
         Make this path a symlink pointing to the given path.
@@ -557,6 +677,9 @@ class Path(PurePath):
 
     # Convenience functions for querying the stat results
 
+    @post(lambda self, result: not self.is_symlink() or (result == self.resolve().exists()),
+          "If the path points to a symlink, exists() returns whether the symlink points to an existing "
+          "file or directory.")
     def exists(self):
         """
         Whether this path exists.
@@ -572,6 +695,8 @@ class Path(PurePath):
             return False
         return True
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist. "
+                                                                      "??? How do we check if it's a broken symlink?")
     def is_dir(self):
         """
         Whether this path is a directory.
@@ -588,6 +713,8 @@ class Path(PurePath):
             # Non-encodable path
             return False
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist."
+                                                                      "??? How do we check if it's a broken symlink?")
     def is_file(self):
         """
         Whether this path is a regular file (also True for symlinks pointing
@@ -626,6 +753,7 @@ class Path(PurePath):
         parent_ino = parent.stat().st_ino
         return ino == parent_ino
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist.")
     def is_symlink(self):
         """
         Whether this path is a symbolic link.
@@ -641,6 +769,7 @@ class Path(PurePath):
             # Non-encodable path
             return False
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist.")
     def is_block_device(self):
         """
         Whether this path is a block device.
@@ -657,6 +786,7 @@ class Path(PurePath):
             # Non-encodable path
             return False
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist.")
     def is_char_device(self):
         """
         Whether this path is a character device.
@@ -673,6 +803,7 @@ class Path(PurePath):
             # Non-encodable path
             return False
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist.")
     def is_fifo(self):
         """
         Whether this path is a FIFO.
@@ -689,6 +820,7 @@ class Path(PurePath):
             # Non-encodable path
             return False
 
+    @post(lambda self, result: not (not self.exists()) or not result, "False is returned if the path doesn’t exist.")
     def is_socket(self):
         """
         Whether this path is a socket.
@@ -710,7 +842,7 @@ class Path(PurePath):
         (as returned by os.path.expanduser)
         """
         if (not (self._drv or self._root) and
-            self._parts and self._parts[0][:1] == '~'):
+                self._parts and self._parts[0][:1] == '~'):
             homedir = self._flavour.gethomedir(self._parts[0][1:])
             return self._from_parts([homedir] + self._parts[1:])
 
@@ -723,6 +855,7 @@ class PosixPath(Path, PurePosixPath):
     On a POSIX system, instantiating a Path should return this object.
     """
     __slots__ = ()
+
 
 class WindowsPath(Path, PureWindowsPath):
     """Path subclass for Windows systems.

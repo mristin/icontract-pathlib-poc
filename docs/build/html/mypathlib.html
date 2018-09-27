@@ -1,0 +1,1219 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mypathlib &mdash; icontract-pathlib-poc 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to icontract-pathlib-poc’s documentation!" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> icontract-pathlib-poc
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">mypathlib</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">icontract-pathlib-poc</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>mypathlib</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/mypathlib.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mypathlib">
+<h1>mypathlib<a class="headerlink" href="#mypathlib" title="Permalink to this headline">¶</a></h1>
+<p>icontract does not prevent endless loops at the moment. This is a missing feature in icontract, and needs yet
+to be discussed, designed and implemented. This is not a blocker, we just haven’t implemented it yet.</p>
+<p>sphinx-icontract only recognizes an implication if <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">A</span> <span class="pre">or</span> <span class="pre">B</span></code>. Hence, I always put a “not” even though it might be
+unnecessary (<code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">(not</span> <span class="pre">A)</span> <span class="pre">or</span> <span class="pre">B</span></code> will render to <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">A</span> <span class="pre">=&gt;</span> <span class="pre">B</span></code>). This is a limitation of sphinx-icontract and will be
+fixed in the near future.</p>
+<p>I noted with <code class="docutils literal notranslate"><span class="pre">???</span></code> whenever I was not sure about something.</p>
+<p>Some stats:</p>
+<ul class="simple">
+<li>It took me about 3 hours and 15 minutes to annotate the file.</li>
+<li></li>
+</ul>
+<dl class="class">
+<dt id="mypathlib.PurePath">
+<em class="property">class </em><code class="descclassname">mypathlib.</code><code class="descname">PurePath</code><a class="headerlink" href="#mypathlib.PurePath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for manipulating paths without I/O.</p>
+<p>PurePath represents a filesystem path and offers operations which
+don’t imply any actual filesystem I/O.  Depending on your system,
+instantiating a PurePath will return either a PurePosixPath or a
+PureWindowsPath object.  You can also instantiate either of these classes
+directly, regardless of your system.</p>
+<p>Construct a PurePath from one or several strings and or existing
+PurePath objects.  The strings and path objects are combined so as
+to yield a canonicalized path, which is incorporated into the
+new PurePath object.</p>
+<dl class="staticmethod">
+<dt id="mypathlib.PurePath.__new__">
+<em class="property">static </em><code class="descname">__new__</code><span class="sig-paren">(</span><em>cls</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.__new__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a PurePath from one or several strings and or existing
+PurePath objects.  The strings and path objects are combined so as
+to yield a canonicalized path, which is incorporated into the
+new PurePath object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">any(Path(arg).is_absolute()</span> <span class="pre">for</span> <span class="pre">arg</span> <span class="pre">in</span> <span class="pre">args)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">[pth</span> <span class="pre">for</span> <span class="pre">arg</span> <span class="pre">in</span> <span class="pre">args</span> <span class="pre">for</span> <span class="pre">pth</span> <span class="pre">in</span> <span class="pre">[Path(arg)]</span> <span class="pre">if</span> <span class="pre">pth.is_absolute()][-1]</span></code> (When several absolute paths are given, the last is taken as an anchor (mimicking os.path.join()’s behaviour))</li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">args</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">str(result)</span> <span class="pre">==</span> <span class="pre">'.'</span></code> (When pathsegments is empty, the current directory is assumed)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">args</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result.parts</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">any('..'</span> <span class="pre">in</span> <span class="pre">arg</span> <span class="pre">for</span> <span class="pre">arg</span> <span class="pre">in</span> <span class="pre">args)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">'..'</span> <span class="pre">in</span> <span class="pre">str(result)</span></code> (Double dots are not collapsed, since this would change the meaning of a path in the face of symbolic links)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">'/./'</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">str(result)</span></code> (Spurious dots are collapsed)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">'//'</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">str(result)</span></code> (Spurious slashes are collapsed)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.__truediv__">
+<code class="descname">__truediv__</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.__truediv__" title="Permalink to this definition">¶</a></dt>
+<dd><p>MR: dummy truediv doc so that it displays in sphinx.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">Path(key).is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">Path(key)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">Path(key).is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result.relative_to(self)</span> <span class="pre">==</span> <span class="pre">Path(key)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">Path(key).is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">self</span> <span class="pre">in</span> <span class="pre">result.parents</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.__weakref__">
+<code class="descname">__weakref__</code><a class="headerlink" href="#mypathlib.PurePath.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.anchor">
+<code class="descname">anchor</code><a class="headerlink" href="#mypathlib.PurePath.anchor" title="Permalink to this definition">¶</a></dt>
+<dd><p>The concatenation of the drive and root, or ‘’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">''</span></code> (No anchor in relative paths.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">self.drive</span> <span class="pre">+</span> <span class="pre">self.root</span></code> (The concatenation of the drive and root.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.as_posix">
+<code class="descname">as_posix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.as_posix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the string representation of the path with forward (/)
+slashes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">something</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">all(len(part)</span> <span class="pre">&lt;</span> <span class="pre">256</span> <span class="pre">for</span> <span class="pre">part</span> <span class="pre">in</span> <span class="pre">self.parts)</span></code> (Contains no path components longer than 255 bytes)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.parts</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">'.'</span></code> (Empty path is ‘.’)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">'\x00'</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">result</span></code> (Contains no null-byte)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.as_uri">
+<code class="descname">as_uri</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.as_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path as a ‘file’ URI.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_absolute()</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">False</span></code> (??? Can it have an URL fragment? Can it have queries? Is it URL-encoded or needs to be URL-encoded by the caller?)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;file://&quot;</span> <span class="pre">+</span> <span class="pre">self.as_posix()</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.drive">
+<code class="descname">drive</code><a class="headerlink" href="#mypathlib.PurePath.drive" title="Permalink to this definition">¶</a></dt>
+<dd><p>The drive prefix (letter or UNC path), if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">isinstance(self,</span> <span class="pre">PosixPath)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span></code> (Linux paths have no drives.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span></code> (Drive of relative paths is empty.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.is_absolute">
+<code class="descname">is_absolute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.is_absolute" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if the path is absolute (has both a root and, if applicable,
+a drive).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">self.root</span> <span class="pre">!=</span> <span class="pre">&quot;&quot;</span></code> (Absolute paths have non-empty root)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.is_reserved">
+<code class="descname">is_reserved</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.is_reserved" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the path contains one of the special names reserved
+by the system, if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">isinstance(self,</span> <span class="pre">PurePosixPath)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (With PurePosixPath, False is always returned.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.joinpath">
+<code class="descname">joinpath</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.joinpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>XXXCombine this path with one or several arguments, and return a
+new path representing either a subpath (if all arguments are relative
+paths) or a totally different path (if one of the arguments is
+anchored).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">False</span></code> (??? I am not familiar with this function enough.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.match">
+<code class="descname">match</code><span class="sig-paren">(</span><em>path_pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this path matches the given pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">Path(path_pattern).is_absolute()</span></code> (If pattern is absolute, the path must be absolute.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">True</span></code> (If pattern is relative, the path can be either relative or absolute.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.name">
+<code class="descname">name</code><a class="headerlink" href="#mypathlib.PurePath.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final path component, if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self</span> <span class="pre">!=</span> <span class="pre">Path(self.anchor)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">self.parts[-1]</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self</span> <span class="pre">==</span> <span class="pre">Path(self.anchor)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">os.path.sep</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">result</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.parent">
+<code class="descname">parent</code><a class="headerlink" href="#mypathlib.PurePath.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logical parent of the path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">len(self.parts)</span> <span class="pre">&gt;</span> <span class="pre">1</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result.name</span> <span class="pre">==</span> <span class="pre">self.parts[-2]</span></code> (This is purely lexical operation.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">len(self.parts)</span> <span class="pre">==</span> <span class="pre">1</span> <span class="pre">and</span> <span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">self</span></code> (You can not go past an anchor)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.parts</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">self</span></code> (You can not go past an empty path)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.parents">
+<code class="descname">parents</code><a class="headerlink" href="#mypathlib.PurePath.parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sequence of this path’s logical parents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.parent</span> <span class="pre">!=</span> <span class="pre">self</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">all(p1.parent</span> <span class="pre">==</span> <span class="pre">p2</span> <span class="pre">for</span> <span class="pre">p1,</span> <span class="pre">p2</span> <span class="pre">in</span> <span class="pre">pairwise(result))</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.parent</span> <span class="pre">!=</span> <span class="pre">self</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">self.parent</span> <span class="pre">==</span> <span class="pre">result[-1]</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.parent</span> <span class="pre">==</span> <span class="pre">self</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.parts">
+<code class="descname">parts</code><a class="headerlink" href="#mypathlib.PurePath.parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object providing sequence-like access to the
+components in the filesystem path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">isinstance(self,</span> <span class="pre">PurePosixPath)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">os.path.sep.join(result)</span> <span class="pre">==</span> <span class="pre">str(self)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result[0]</span> <span class="pre">==</span> <span class="pre">self.anchor</span></code> (The anchor is regrouped in a single part)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">len(result)</span> <span class="pre">&gt;=</span> <span class="pre">1</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.relative_to">
+<code class="descname">relative_to</code><span class="sig-paren">(</span><em>*other</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.relative_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the relative path to another path identified by the passed
+arguments.  If the operation is not possible (because this is not
+a subpath of the other path), raise ValueError.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.root">
+<code class="descname">root</code><a class="headerlink" href="#mypathlib.PurePath.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>The root of the path, if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span></code> (Root of relative paths is empty.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.stem">
+<code class="descname">stem</code><a class="headerlink" href="#mypathlib.PurePath.stem" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final path component, minus its last suffix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.name().endswith(&quot;.&quot;)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">self.name()</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name()</span> <span class="pre">==</span> <span class="pre">result</span> <span class="pre">+</span> <span class="pre">self.suffix()</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.suffix">
+<code class="descname">suffix</code><a class="headerlink" href="#mypathlib.PurePath.suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The final component’s last suffix, if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">&quot;.&quot;</span> <span class="pre">in</span> <span class="pre">self.name()[:-1]</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">!=</span> <span class="pre">&quot;&quot;</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name().endswith(&quot;.&quot;)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name()</span> <span class="pre">==</span> <span class="pre">self.stem()</span> <span class="pre">+</span> <span class="pre">result</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name().endswith(result)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name()</span> <span class="pre">or</span> <span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">&quot;&quot;</span> <span class="pre">or</span> <span class="pre">result.startswith(&quot;.&quot;)</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="mypathlib.PurePath.suffixes">
+<code class="descname">suffixes</code><a class="headerlink" href="#mypathlib.PurePath.suffixes" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of the final component’s suffixes, if any.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Get ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">[]</span> <span class="pre">or</span> <span class="pre">self.name()</span> <span class="pre">==</span> <span class="pre">self.stem</span> <span class="pre">+</span> <span class="pre">result[-1]</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name().endswith(&quot;.&quot;)</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">[]</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name().endswith(&quot;.&quot;)</span> <span class="pre">or</span> <span class="pre">self.suffix()</span> <span class="pre">==</span> <span class="pre">&quot;&quot;.join(result)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.name()</span> <span class="pre">or</span> <span class="pre">result</span> <span class="pre">==</span> <span class="pre">[]</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">all(not</span> <span class="pre">item.endswith(&quot;.&quot;)</span> <span class="pre">for</span> <span class="pre">item</span> <span class="pre">in</span> <span class="pre">result)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">all(item.startswith(&quot;.&quot;)</span> <span class="pre">for</span> <span class="pre">item</span> <span class="pre">in</span> <span class="pre">result)</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.with_name">
+<code class="descname">with_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.with_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with the file name changed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.name</span></code> (The original path must have a name.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result.parent</span> <span class="pre">==</span> <span class="pre">self.parent</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">result.name()</span> <span class="pre">==</span> <span class="pre">name</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.PurePath.with_suffix">
+<code class="descname">with_suffix</code><span class="sig-paren">(</span><em>suffix</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.PurePath.with_suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with the file suffix changed.  If the path
+has no suffix, add given suffix.  If the given suffix is an empty
+string, remove the suffix from the path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.name()</span></code> (The original path must have a name.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">suffix</span> <span class="pre">and</span> <span class="pre">suffix</span> <span class="pre">!=</span> <span class="pre">'.'</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">suffix.startswith(&quot;.&quot;)</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">os.path.altsep</span> <span class="pre">in</span> <span class="pre">suffix</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">os.path.sep</span> <span class="pre">in</span> <span class="pre">suffix</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">suffix</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result.suffix</span></code> (If the suffix is an empty string, the original suffix is removed.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.suffix</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result.name</span> <span class="pre">==</span> <span class="pre">self.name</span> <span class="pre">+</span> <span class="pre">suffix</span></code> (If the original path doesn’t have a suffix, the new suffix is appended instead.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">result.parent</span> <span class="pre">==</span> <span class="pre">self.parent</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="mypathlib.Path">
+<em class="property">class </em><code class="descclassname">mypathlib.</code><code class="descname">Path</code><a class="headerlink" href="#mypathlib.Path" title="Permalink to this definition">¶</a></dt>
+<dd><p>PurePath subclass that can make system calls.</p>
+<p>Path represents a filesystem path but unlike PurePath, also offers
+methods to do system calls on path objects. Depending on your system,
+instantiating a Path will return either a PosixPath or a WindowsPath
+object. You can also instantiate a PosixPath or WindowsPath directly,
+but cannot instantiate a WindowsPath on a POSIX system or vice versa.</p>
+<p>Construct a PurePath from one or several strings and or existing
+PurePath objects.  The strings and path objects are combined so as
+to yield a canonicalized path, which is incorporated into the
+new PurePath object.</p>
+<dl class="method">
+<dt id="mypathlib.Path.absolute">
+<code class="descname">absolute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.absolute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an absolute version of this path.  This function works
+even if the path doesn’t point to anything.</p>
+<p>No normalization is done, i.e. all ‘.’ and ‘..’ will be kept along.
+Use resolve() to get the canonical path to a file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result.is_absolute()</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">'..'</span> <span class="pre">in</span> <span class="pre">self.parts</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">'..'</span> <span class="pre">in</span> <span class="pre">result.parts</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">'.'</span> <span class="pre">in</span> <span class="pre">self.parts</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">'.'</span> <span class="pre">in</span> <span class="pre">result.parts</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_absolute()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">self</span> <span class="pre">==</span> <span class="pre">result</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.chmod">
+<code class="descname">chmod</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.chmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the permissions of the path, like os.chmod().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">True</span></code> (??? It would make sense to use old(self.stat()) and compare it against the new mode.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mypathlib.Path.cwd">
+<em class="property">classmethod </em><code class="descname">cwd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path pointing to the current working directory
+(as returned by os.getcwd()).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">os.getcwd()</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.exists">
+<code class="descname">exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path exists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_symlink()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">self.resolve().exists()</span></code> (If the path points to a symlink, exists() returns whether the symlink points to an existing file or directory.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.expanduser">
+<code class="descname">expanduser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.expanduser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path with expanded ~ and ~user constructs
+(as returned by os.path.expanduser)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.glob">
+<code class="descname">glob</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.glob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over this subtree and yield all existing files (of any
+kind, including directories) matching the given pattern.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">Path(pattern).is_absolute()</span></code> (Non-relative patterns are unsupported)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">pattern</span></code> (Unacceptable pattern)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.group">
+<code class="descname">group</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the group name of the file gid.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="mypathlib.Path.home">
+<em class="property">classmethod </em><code class="descname">home</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new path pointing to the user’s home directory (as
+returned by os.path.expanduser(‘~’)).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">os.path.expanduser('~')</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_block_device">
+<code class="descname">is_block_device</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_block_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a block device.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_char_device">
+<code class="descname">is_char_device</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_char_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a character device.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_dir">
+<code class="descname">is_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a directory.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist. ??? How do we check if it’s a broken symlink?)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_fifo">
+<code class="descname">is_fifo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_fifo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a FIFO.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_file">
+<code class="descname">is_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a regular file (also True for symlinks pointing
+to regular files).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist.??? How do we check if it’s a broken symlink?)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_mount">
+<code class="descname">is_mount</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_mount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if this path is a POSIX mount point</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_socket">
+<code class="descname">is_socket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_socket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a socket.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.is_symlink">
+<code class="descname">is_symlink</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.is_symlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether this path is a symbolic link.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">result</span></code> (False is returned if the path doesn’t exist.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.iterdir">
+<code class="descname">iterdir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.iterdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over the files in this directory.  Does not yield any
+result for the special paths ‘.’ and ‘..’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.lchmod">
+<code class="descname">lchmod</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.lchmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like chmod(), except if the path points to a symlink, the symlink’s
+permissions are changed, rather than its target’s.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">True</span></code> (??? It would make sense to use old(self.stat()) and compare it against the new mode. This would need a case distinction for symlink yes/no.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.lstat">
+<code class="descname">lstat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.lstat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like stat(), except if the path points to a symlink, the symlink’s
+status information is returned, rather than its target’s.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">and</span> <span class="pre">not</span> <span class="pre">self.is_symlink()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result.__dict__</span> <span class="pre">==</span> <span class="pre">self.stat()</span></code> (Same as Path.stat())</li>
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">and</span> <span class="pre">self.is_symlink()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">result.__dict__</span> <span class="pre">==</span> <span class="pre">self.resolve().stat()</span></code> (If the path points to a symbolic link, return the symbolic link’s information rather than its target’s.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.mkdir">
+<code class="descname">mkdir</code><span class="sig-paren">(</span><em>mode=511</em>, <em>parents=False</em>, <em>exist_ok=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.mkdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new directory at this given path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">self.parent.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">parents</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.exists()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">exist_ok</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.open">
+<code class="descname">open</code><span class="sig-paren">(</span><em>mode='r'</em>, <em>buffering=-1</em>, <em>encoding=None</em>, <em>errors=None</em>, <em>newline=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file pointed by this path and return a file object, as
+the built-in open() function does.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.owner">
+<code class="descname">owner</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.owner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the login name of the file owner.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.read_bytes">
+<code class="descname">read_bytes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.read_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in bytes mode, read it, and close the file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.read_text">
+<code class="descname">read_text</code><span class="sig-paren">(</span><em>encoding=None</em>, <em>errors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.read_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in text mode, read it, and close the file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.rename">
+<code class="descname">rename</code><span class="sig-paren">(</span><em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename this path to the given path.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.replace">
+<code class="descname">replace</code><span class="sig-paren">(</span><em>target</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename this path to the given path, clobbering the existing
+destination if it exists.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.resolve">
+<code class="descname">resolve</code><span class="sig-paren">(</span><em>strict=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.resolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make the path absolute, resolving all symlinks on the way and also
+normalizing it (for example turning slashes into backslashes under
+Windows).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">strict</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">True</span></code> (The path is resolved as far as possible and any remainder is appended without checking whether it exists. If an infinite loop is encountered along the resolution path, RuntimeError is raised.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">strict</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">self.exists()</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">'..'</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">result.parts</span></code> (<code class="docutils literal notranslate"><span class="pre">..</span></code> components are eliminated.)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">result.is_absolute()</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.rglob">
+<code class="descname">rglob</code><span class="sig-paren">(</span><em>pattern</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.rglob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively yield all existing files (of any kind, including
+directories) matching the given pattern, anywhere in this subtree.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">Path(pattern).is_absolute()</span></code> (Non-relative patterns are unsupported)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">pattern</span></code> (Unacceptable pattern)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.rmdir">
+<code class="descname">rmdir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.rmdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove this directory.  The directory must be empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">not</span> <span class="pre">list(self.iterdir())</span></code> (??? There must be a way to check this more optimally)</li>
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_dir()</span></code></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.samefile">
+<code class="descname">samefile</code><span class="sig-paren">(</span><em>other_path</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.samefile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return whether other_path is the same or not as this file
+(as returned by os.path.samefile()).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first simple">
+<li><code class="code docutils literal notranslate"><span class="pre">isinstance(other_path,</span> <span class="pre">(str,</span> <span class="pre">Path))</span></code> (other_path can be either a Path object, or a string)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">==</span> <span class="pre">os.path.samefile(str(self),</span> <span class="pre">str(other_path))</span></code> (The semantics are similar to os.path.samefile() and os.path.samestat() ??? I don’t understand what is meant here with semantics similar to os.path.samestat().)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.stat">
+<code class="descname">stat</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.stat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the result of the stat() system call on this path, like
+os.stat() does.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Ensures:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">None</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">self.exists()</span></code></li>
+<li><code class="code docutils literal notranslate"><span class="pre">result</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">None</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">os.stat(str(self)).__dict__</span> <span class="pre">==</span> <span class="pre">result.__dict__</span></code> (??? This is probably not what it was meant with ‘like os.stat() does’?)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.symlink_to">
+<code class="descname">symlink_to</code><span class="sig-paren">(</span><em>target</em>, <em>target_is_directory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.symlink_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make this path a symlink pointing to the given path.
+Note the order of arguments (self, target) is the reverse of os.symlink’s.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">isinstance(self,</span> <span class="pre">PureWindowsPath)</span> <span class="pre">and</span> <span class="pre">target.is_dir()</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">target_is_directory</span> <span class="pre">==</span> <span class="pre">True</span></code> (Under Windows, target_is_directory must be true (default False) if the link’s target is a directory.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.touch">
+<code class="descname">touch</code><span class="sig-paren">(</span><em>mode=438</em>, <em>exist_ok=True</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.touch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create this file with the given access mode, if it doesn’t exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.exists</span></code> ⇒ <code class="code docutils literal notranslate"><span class="pre">exist_ok</span></code> (If the file already exists, the function succeeds if exist_ok is true.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.unlink">
+<code class="descname">unlink</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.unlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove this file or link.
+If the path is a directory, use rmdir() instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">self.is_file()</span></code> (The path points to a directory, use Path.rmdir() instead.)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.write_bytes">
+<code class="descname">write_bytes</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.write_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in bytes mode, write to it, and close the file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="mypathlib.Path.write_text">
+<code class="descname">write_text</code><span class="sig-paren">(</span><em>data</em>, <em>encoding=None</em>, <em>errors=None</em><span class="sig-paren">)</span><a class="headerlink" href="#mypathlib.Path.write_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the file in text mode, write to it, and close the file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Requires:</th><td class="field-body"><ul class="first last simple">
+<li><code class="code docutils literal notranslate"><span class="pre">isinstance(data,</span> <span class="pre">str)</span></code> (data must be str)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to icontract-pathlib-poc’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Marko Ristin.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
